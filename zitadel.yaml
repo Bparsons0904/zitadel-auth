@@ -1,0 +1,13 @@
+FirstInstance:
+  Org:
+    Name: "Waugze"
+    Human:
+      Username: "admin@waugze.com"
+      Password: "${ZITADEL_ADMIN_PASSWORD}"
+Log:
+  Level: "info"
+TLS:
+  Enabled: false
+ExternalDomain: "${ZITADEL_DOMAIN}"
+ExternalPort: 443
+ExternalSecure: true

@@ -1,0 +1,28 @@
+kind: pipeline
+type: docker
+name: deploy-zitadel
+steps:
+  - name: deploy
+    image: docker/compose:1.29.2
+    environment:
+      ZITADEL_MASTERKEY:
+        from_secret: zitadel_masterkey
+      ZITADEL_DB_USER:
+        from_secret: zitadel_db_user
+      ZITADEL_DB_PASSWORD:
+        from_secret: zitadel_db_password
+      POSTGRES_USER:
+        from_secret: postgres_user
+      POSTGRES_PASSWORD:
+        from_secret: postgres_password
+      ZITADEL_DOMAIN:
+        from_secret: zitadel_domain
+      ZITADEL_ADMIN_PASSWORD:
+        from_secret: zitadel_admin_password
+    commands:
+      - printenv | grep -E "ZITADEL_|POSTGRES_" > .env
+      - docker-compose -f docker-compose.yml up -d
+trigger:
+  branch:
+
+# - main
