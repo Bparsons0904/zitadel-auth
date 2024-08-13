@@ -3,7 +3,7 @@ type: docker
 name: deploy-zitadel
 steps:
   - name: deploy
-    image: docker:dind
+    image: docker/compose:1.29.2
     volumes:
       - name: dockersock
         path: /var/run/docker.sock
@@ -26,11 +26,13 @@ steps:
         from_secret: zitadel_domain
     commands:
       - printenv | grep -E "^(ZITADEL|POSTGRES|UID)_" > .env
-      - docker stack deploy -c docker-compose.yml zitadel-stack --with-registry-auth --prune
-trigger:
-  branch:
-    - main
+      - docker-compose -f docker-compose.yml down -v --remove-orphans
+      - docker system prune -f
+      - docker-compose -f docker-compose.yml up -d --remove-orphans
 volumes:
   - name: dockersock
     host:
       path: /var/run/docker.sock
+trigger:
+  branch:
+    - main
