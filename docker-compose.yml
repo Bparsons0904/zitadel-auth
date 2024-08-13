@@ -82,8 +82,9 @@ services:
     networks:
       - "zitadel"
     volumes:
-      - "data:/var/lib/postgresql/data:rw"
+      - zitadel_data:/var/lib/postgresql/data
 networks:
   zitadel:
 volumes:
-  data:
+  zitadel_data:
+    driver: local

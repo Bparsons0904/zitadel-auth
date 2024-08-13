@@ -1,0 +1,52 @@
+kind: pipeline
+type: docker
+name: zitadel-init
+steps:
+  - name: clean-volumes
+    image: docker:dind
+    volumes:
+      - name: dockersock
+        path: /var/run/docker.sock
+    commands:
+      - docker-compose down -v
+  - name: init-deploy
+    image: docker/compose:1.29.2
+    environment:
+      UID:
+        from_secret: uid
+      ZITADEL_IMAGE:
+        from_secret: zitadel_image
+      ZITADEL_MASTERKEY:
+        from_secret: zitadel_masterkey
+      ZITADEL_DB_USER:
+        from_secret: zitadel_db_user
+      ZITADEL_DB_PASSWORD:
+        from_secret: zitadel_db_password
+      POSTGRES_USER:
+        from_secret: postgres_user
+      POSTGRES_PASSWORD:
+        from_secret: postgres_password
+      ZITADEL_DOMAIN:
+        from_secret: zitadel_domain
+      ZITADEL_ADMIN_PASSWORD:
+        from_secret: zitadel_admin_password
+    commands:
+      - printenv | grep -E "^(ZITADEL|POSTGRES|UID)_" > .env
+      - docker-compose up -d --force-recreate --renew-anon-volumes
+  - name: check-db
+    image: postgres:16-alpine
+    environment:
+      PGPASSWORD:
+        from_secret: postgres_password
+    commands:
+      - sleep 30
+      - psql -h db -U ${POSTGRES_USER} -d zitadel -c "SELECT * FROM management.users LIMIT 5;"
+trigger:
+  event:
+    - promote
+  target:
+    - initialize
+volumes:
+  - name: dockersock
+    host:
+      path: /var/run/docker.sock
