@@ -2,11 +2,8 @@ kind: pipeline
 type: docker
 name: deploy-zitadel
 steps:
-  - name: deploy
-    image: docker/compose:1.29.2
-    volumes:
-      - name: dockersock
-        path: /var/run/docker.sock
+  - name: create-env-file
+    image: alpine:latest
     environment:
       UID:
         from_secret: uid
@@ -26,11 +23,50 @@ steps:
         from_secret: zitadel_domain
     commands:
       - printenv | grep -E "^(ZITADEL|POSTGRES|UID)_" > .env
-      - docker-compose -f docker-compose.yml down -v --remove-orphans
+  - name: stop-db
+    image: docker/compose:1.29.2
+    commands:
+      - docker-compose --env-file .env -f docker-compose.yml down db
+      - docker-compose --env-file .env -f docker-compose.yml rm -f db
       - docker system prune -f
-      - docker-compose -f docker-compose.yml up -d --remove-orphans
+    depends_on:
+      - create-env-file
+  - name: start-db
+    image: docker/compose:1.29.2
+    commands:
+      - docker-compose --env-file .env -f docker-compose.yml up -d db
+    depends_on:
+      - stop-db
+  - name: stop-init-zitadel
+    image: docker/compose:1.29.2
+    commands:
+      - docker-compose --env-file .env -f docker-compose.yml down zitadel-init
+      - docker-compose --env-file .env -f docker-compose.yml rm -f zitadel-init
+      - docker system prune -f
+    depends_on:
+      - start-db
+  - name: init-zitadel
+    image: docker/compose:1.29.2
+    commands:
+      - docker-compose --env-file .env -f docker-compose.yml up -d zitadel-init
+    depends_on:
+      - stop-init-zitadel
+  - name: stop-zitadel
+    image: docker/compose:1.29.2
+    commands:
+      - docker-compose --env-file .env -f docker-compose.yml down zitadel
+      - docker-compose --env-file .env -f docker-compose.yml rm -f zitadel
+      - docker system prune -f
+    depends_on:
+      - init-zitadel
+  - name: deploy-zitadel
+    image: docker/compose:1.29.2
+    commands:
+      - docker-compose --env-file .env -f docker-compose.yml up -d zitadel
+    depends_on:
+      - stop-zitadel
 volumes:
-  - name: dockersock
+  - name: docker_sock
     host:
       path: /var/run/docker.sock
 trigger:
