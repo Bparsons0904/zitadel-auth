@@ -24,8 +24,12 @@ steps:
       ZITADEL_ADMIN_PASSWORD:
         from_secret: zitadel_auth_password
       ZITADEL_EXTERNALDOMAIN:
-        from_secret: zitadel_domain
+        from_secret: zitadel_externaldomain
+      ZITADEL_AUTH_PASSWORD:
+        from_secret: zitadel_auth_password
     commands:
+      - chown 1000:1000 zitadel.yaml
+      - chmod 644 zitadel.yaml
       - docker-compose down
       - docker-compose up -d
 trigger:
