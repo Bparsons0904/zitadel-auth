@@ -4,7 +4,8 @@ services:
     user: "${UID:-1000}"
     command: "init --config /zitadel.yaml"
     environment:
-      - ZITADEL_EXTERNALDOMAIN=auth.waugze.com
+      # - ZITADEL_EXTERNALDOMAIN=auth.waugze.com
+      - ZITADEL_FIRSTINSTANCE_ORG_HUMAN_PASSWORDCHANGEREQUIRED=false
       - ZITADEL_EXTERNALPORT=443
       - ZITADEL_EXTERNALSECURE=true
       - ZITADEL_LOGSTORE_ACCESS_STDOUT_ENABLED=true
@@ -25,9 +26,10 @@ services:
   zitadel:
     image: ${ZITADEL_IMAGE:-ghcr.io/zitadel/zitadel:stable}
     user: "${UID:-1000}"
-    command: 'start-from-setup --tlsMode external --init-projections --masterkey "${ZITADEL_MASTERKEY}" --config /zitadel.yaml'
+    command: 'start-from-setup --init-projections --masterkey "${ZITADEL_MASTERKEY}" --config /zitadel.yaml --steps /zitadel.yaml'
     environment:
-      - ZITADEL_EXTERNALDOMAIN=auth.waugze.com
+      # - ZITADEL_EXTERNALDOMAIN=auth.waugze.com
+      - ZITADEL_FIRSTINSTANCE_ORG_HUMAN_PASSWORDCHANGEREQUIRED=false
       - ZITADEL_EXTERNALPORT=443
       - ZITADEL_EXTERNALSECURE=true
       - ZITADEL_LOGSTORE_ACCESS_STDOUT_ENABLED=true
@@ -62,7 +64,7 @@ services:
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready", "-d", "db_prod"]
+      test: ["CMD-SHELL", "pg_isready", "-d", "zitadel"]
       interval: 5s
       timeout: 60s
       retries: 10
