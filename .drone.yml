@@ -33,6 +33,8 @@ steps:
         from_secret: postgres_password
       ZITADEL_DOMAIN:
         from_secret: zitadel_domain
+      ZITADEL_ADMIN_PASSWORD:
+        from_secret: zitadel_auth_password
     commands:
       - printenv | grep -E "^(ZITADEL|POSTGRES|UID)_" > .env
       - docker-compose down
