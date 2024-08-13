@@ -2,10 +2,14 @@ kind: pipeline
 type: docker
 name: deploy-zitadel
 steps:
-  - name: prepare-config
+  - name: check-config
     image: alpine
     commands:
-      - cp /drone/src/zitadel.yaml .
+      - cat zitadel.yaml
+  - name: check-compose
+    image: alpine
+    commands:
+      - cat docker-compose.yml
   - name: validate-compose
     image: docker/compose:1.29.2
     commands:
