@@ -5,6 +5,10 @@ steps:
   - name: deploy
     image: docker/compose:1.29.2
     environment:
+      UID:
+        from_secret: uid
+      ZITADEL_IMAGE:
+        from_secret: zitadel_image
       ZITADEL_MASTERKEY:
         from_secret: zitadel_masterkey
       ZITADEL_DB_USER:
