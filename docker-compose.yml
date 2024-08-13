@@ -4,9 +4,10 @@ services:
     user: "${UID:-1000}"
     command: "init --config /zitadel.yaml"
     environment:
-      - ZITADEL_EXTERNALDOMAIN=${ZITADEL_DOMAIN}
+      - ZITADEL_EXTERNALDOMAIN=auth.waugze.com
+      - ZITADEL_EXTERNALPORT=443
+      - ZITADEL_EXTERNALSECURE=true
       - ZITADEL_LOGSTORE_ACCESS_STDOUT_ENABLED=true
-      - ZITADEL_FIRSTINSTANCE_ORG_HUMAN_PASSWORDCHANGEREQUIRED=false
       - ZITADEL_DATABASE_POSTGRES_HOST=db
       - ZITADEL_DATABASE_POSTGRES_PORT=5432
       - ZITADEL_DATABASE_POSTGRES_DATABASE=zitadel
@@ -24,12 +25,11 @@ services:
   zitadel:
     image: ${ZITADEL_IMAGE:-ghcr.io/zitadel/zitadel:stable}
     user: "${UID:-1000}"
-    command: 'start-from-setup --init-projections --masterkey "${ZITADEL_MASTERKEY}" --config /zitadel.yaml --steps /zitadel.yaml'
+    command: 'start-from-setup --production --init-projections --masterkey "${ZITADEL_MASTERKEY}" --config /zitadel.yaml'
     environment:
+      - ZITADEL_EXTERNALDOMAIN=auth.waugze.com
       - ZITADEL_EXTERNALPORT=443
       - ZITADEL_EXTERNALSECURE=true
-      - ZITADEL_TLS_ENABLED=false
-      - ZITADEL_EXTERNALDOMAIN=${ZITADEL_DOMAIN}
       - ZITADEL_LOGSTORE_ACCESS_STDOUT_ENABLED=true
       - ZITADEL_DATABASE_POSTGRES_HOST=db
       - ZITADEL_DATABASE_POSTGRES_PORT=5432
@@ -42,6 +42,8 @@ services:
       - ZITADEL_DATABASE_POSTGRES_ADMIN_SSL_MODE=disable
     networks:
       - "zitadel"
+    ports:
+      - "8088:8080"
     depends_on:
       zitadel-init:
         condition: "service_completed_successfully"
