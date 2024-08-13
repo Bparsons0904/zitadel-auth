@@ -26,34 +26,34 @@ steps:
   - name: stop-db
     image: docker/compose:1.29.2
     commands:
-      - docker-compose --env-file .env -f docker-compose.yml down db
-      - docker-compose --env-file .env -f docker-compose.yml rm -f db
+      - docker-compose -f docker-compose.yml down db
+      - docker-compose -f docker-compose.yml rm -f db
   - name: start-db
     image: docker/compose:1.29.2
     commands:
-      - docker-compose --env-file .env -f docker-compose.yml up -d db
+      - docker-compose -f docker-compose.yml up -d db
     depends_on:
       - stop-db
   - name: stop-init-zitadel
     image: docker/compose:1.29.2
     commands:
-      - docker-compose --env-file .env -f docker-compose.yml down zitadel-init
-      - docker-compose --env-file .env -f docker-compose.yml rm -f zitadel-init
+      - docker-compose -f docker-compose.yml down zitadel-init
+      - docker-compose -f docker-compose.yml rm -f zitadel-init
   - name: init-zitadel
     image: docker/compose:1.29.2
     commands:
-      - docker-compose --env-file .env -f docker-compose.yml up -d zitadel-init
+      - docker-compose -f docker-compose.yml up -d zitadel-init
     depends_on:
       - stop-init-zitadel
   - name: stop-zitadel
     image: docker/compose:1.29.2
     commands:
-      - docker-compose --env-file .env -f docker-compose.yml down zitadel
-      - docker-compose --env-file .env -f docker-compose.yml rm -f zitadel
+      - docker-compose -f docker-compose.yml down zitadel
+      - docker-compose -f docker-compose.yml rm -f zitadel
   - name: deploy-zitadel
     image: docker/compose:1.29.2
     commands:
-      - docker-compose --env-file .env -f docker-compose.yml up -d zitadel
+      - docker-compose -f docker-compose.yml up -d zitadel
     depends_on:
       - stop-zitadel
 volumes:
