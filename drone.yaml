@@ -24,5 +24,4 @@ steps:
       - docker-compose -f docker-compose.yml up -d
 trigger:
   branch:
-
-# - main
+    - main
