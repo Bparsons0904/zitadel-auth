@@ -20,13 +20,15 @@ services:
       - ZITADEL_DATABASE_POSTGRES_ADMIN_SSL_MODE=disable
     networks:
       - "zitadel"
+    volumes:
+      - ./zitadel.yaml:/zitadel.yaml
     depends_on:
       db:
         condition: "service_healthy"
   zitadel:
     image: ${ZITADEL_IMAGE:-ghcr.io/zitadel/zitadel:stable}
     user: "${UID:-1000}"
-    command: 'start-from-setup --init-projections --masterkey "${ZITADEL_MASTERKEY}" --config /zitadel.yaml --steps /zitadel.yaml'
+    command: 'start-from-setup --tlsMode external --init-projections --masterkey "${ZITADEL_MASTERKEY}" --config /zitadel.yaml --steps /zitadel.yaml'
     environment:
       # - ZITADEL_EXTERNALDOMAIN=auth.waugze.com
       - ZITADEL_FIRSTINSTANCE_ORG_HUMAN_PASSWORDCHANGEREQUIRED=false
@@ -44,6 +46,8 @@ services:
       - ZITADEL_DATABASE_POSTGRES_ADMIN_SSL_MODE=disable
     networks:
       - "zitadel"
+    volumes:
+      - ./zitadel.yaml:/zitadel.yaml
     ports:
       - "8088:8080"
     depends_on:
