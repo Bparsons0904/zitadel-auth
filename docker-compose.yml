@@ -4,7 +4,7 @@ services:
     user: "${UID:-1000}"
     command: "init --config /zitadel.yaml"
     environment:
-      - ZITADEL_EXTERNALDOMAIN=${ZITADEL_DOMAIN}
+      - ZITADEL_EXTERNALDOMAIN=${ZITADEL_EXTERNALDOMAIN}
       - ZITADEL_AUTH_PASSWORD=${ZITADEL_AUTH_PASSWORD}
       - ZITADEL_FIRSTINSTANCE_ORG_NAME=Waugze
       - ZITADEL_FIRSTINSTANCE_ORG_HUMAN_USERNAME=admin@waugze.com
@@ -34,9 +34,9 @@ services:
     user: "${UID:-1000}"
     command: 'start-from-setup --tlsMode external --init-projections --masterkey "${ZITADEL_MASTERKEY}" --config /zitadel.yaml --steps /zitadel.yaml'
     environment:
-      - ZITADEL_EXTERNALDOMAIN=${ZITADEL_DOMAIN}
+      - ZITADEL_EXTERNALDOMAIN=${ZITADEL_EXTERNALDOMAIN}
       - ZITADEL_AUTH_PASSWORD=${ZITADEL_AUTH_PASSWORD}
-      - ZITADEL_FIRSTINSTANCE_ORG_NAME=waugze
+      - ZITADEL_FIRSTINSTANCE_ORG_NAME=Waugze
       - ZITADEL_FIRSTINSTANCE_ORG_HUMAN_USERNAME=admin@waugze.com
       - ZITADEL_FIRSTINSTANCE_ORG_HUMAN_PASSWORD=${ZITADEL_AUTH_PASSWORD}
       - ZITADEL_FIRSTINSTANCE_ORG_HUMAN_PASSWORDCHANGEREQUIRED=false

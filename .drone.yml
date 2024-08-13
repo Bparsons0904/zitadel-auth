@@ -21,12 +21,12 @@ steps:
         from_secret: postgres_password
       ZITADEL_DOMAIN:
         from_secret: zitadel_domain
-      ZITADEL_ADMIN_PASSWORD:
-        from_secret: zitadel_auth_password
-      ZITADEL_EXTERNALDOMAIN:
-        from_secret: zitadel_externaldomain
       ZITADEL_AUTH_PASSWORD:
         from_secret: zitadel_auth_password
+      ZITADEL_ADMIN_PASSWORD:
+        from_secret: zitadel_admin_password
+      ZITADEL_EXTERNALDOMAIN:
+        from_secret: zitadel_externaldomain
     commands:
       - chown 1000:1000 zitadel.yaml
       - chmod 644 zitadel.yaml
