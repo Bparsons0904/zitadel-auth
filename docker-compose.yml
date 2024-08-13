@@ -19,6 +19,10 @@ services:
       - ZITADEL_DATABASE_POSTGRES_ADMIN_SSL_MODE=disable
     networks:
       - "zitadel"
+    deploy:
+      restart_policy:
+        condition: on-failure
+        max_attempts: 3
     depends_on:
       db:
         condition: "service_healthy"
@@ -44,11 +48,11 @@ services:
       - "zitadel"
     ports:
       - "8088:8080"
-    depends_on:
-      zitadel-init:
-        condition: "service_completed_successfully"
-      db:
-        condition: "service_healthy"
+    deploy:
+      replicas: 2
+      update_config:
+        parallelism: 1
+        order: start-first
     healthcheck:
       test: ["CMD", "/app/zitadel", "ready"]
       interval: "10s"
