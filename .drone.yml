@@ -2,33 +2,68 @@ kind: pipeline
 type: docker
 name: deploy-zitadel
 steps:
-  - name: deploy
+  - name: stop-db
     image: docker/compose:1.29.2
-    volumes:
-      - name: dockersock
-        path: /var/run/docker.sock
-    environment:
-      UID:
-        from_secret: uid
-      ZITADEL_IMAGE:
-        from_secret: zitadel_image
-      ZITADEL_MASTERKEY:
-        from_secret: zitadel_masterkey
-      ZITADEL_DB_USER:
-        from_secret: zitadel_db_user
-      ZITADEL_DB_PASSWORD:
-        from_secret: zitadel_db_password
-      POSTGRES_USER:
-        from_secret: postgres_user
-      POSTGRES_PASSWORD:
-        from_secret: postgres_password
-      ZITADEL_DOMAIN:
-        from_secret: zitadel_domain
     commands:
-      - docker-compose -f docker-compose.yml down -v --remove-orphans
-      - docker-compose -f docker-compose.yml up -d --remove-orphans
+      - docker-compose -f docker-compose.yml down db
+  - name: start-db
+    image: docker/compose:1.29.2
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    commands:
+      - docker-compose -f docker-compose.yml up -d db
+    depends_on:
+      - stop-db
+  - name: init-zitadel
+    image: docker/compose:1.29.2
+    environment:
+      ZITADEL_EXTERNALDOMAIN: auth.waugze.com
+      ZITADEL_EXTERNALPORT: 443
+      ZITADEL_EXTERNALSECURE: true
+      ZITADEL_LOGSTORE_ACCESS_STDOUT_ENABLED: true
+      ZITADEL_DATABASE_POSTGRES_HOST: db
+      ZITADEL_DATABASE_POSTGRES_PORT: 5432
+      ZITADEL_DATABASE_POSTGRES_DATABASE: zitadel
+      ZITADEL_DATABASE_POSTGRES_USER_USERNAME: ${ZITADEL_DB_USER}
+      ZITADEL_DATABASE_POSTGRES_USER_PASSWORD: ${ZITADEL_DB_PASSWORD}
+      ZITADEL_DATABASE_POSTGRES_USER_SSL_MODE: disable
+      ZITADEL_DATABASE_POSTGRES_ADMIN_USERNAME: ${POSTGRES_USER}
+      ZITADEL_DATABASE_POSTGRES_ADMIN_PASSWORD: ${POSTGRES_PASSWORD}
+      ZITADEL_DATABASE_POSTGRES_ADMIN_SSL_MODE: disable
+    commands:
+      - docker-compose -f docker-compose.yml down zitadel-init
+      - docker-compose -f docker-compose.yml up -d zitadel-init
+    depends_on:
+      - start-db
+  - name: stop-zitadel
+    image: docker/compose:1.29.2
+    commands:
+      - docker-compose -f docker-compose.yml down zitadel
+    depends_on:
+      - init-zitadel
+  - name: deploy-zitadel
+    image: docker/compose:1.29.2
+    environment:
+      ZITADEL_EXTERNALDOMAIN: auth.waugze.com
+      ZITADEL_EXTERNALPORT: 443
+      ZITADEL_EXTERNALSECURE: true
+      ZITADEL_LOGSTORE_ACCESS_STDOUT_ENABLED: true
+      ZITADEL_DATABASE_POSTGRES_HOST: db
+      ZITADEL_DATABASE_POSTGRES_PORT: 5432
+      ZITADEL_DATABASE_POSTGRES_DATABASE: zitadel
+      ZITADEL_DATABASE_POSTGRES_USER_USERNAME: ${ZITADEL_DB_USER}
+      ZITADEL_DATABASE_POSTGRES_USER_PASSWORD: ${ZITADEL_DB_PASSWORD}
+      ZITADEL_DATABASE_POSTGRES_USER_SSL_MODE: disable
+      ZITADEL_DATABASE_POSTGRES_ADMIN_USERNAME: ${POSTGRES_USER}
+      ZITADEL_DATABASE_POSTGRES_ADMIN_PASSWORD: ${POSTGRES_PASSWORD}
+      ZITADEL_DATABASE_POSTGRES_ADMIN_SSL_MODE: disable
+    commands:
+      - docker-compose -f docker-compose.yml up -d zitadel
+    depends_on:
+      - stop-zitadel
 volumes:
-  - name: dockersock
+  - name: docker_sock
     host:
       path: /var/run/docker.sock
 trigger:
