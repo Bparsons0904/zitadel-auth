@@ -4,6 +4,9 @@ name: deploy-zitadel
 steps:
   - name: deploy
     image: docker/compose:1.29.2
+    volumes:
+      - name: dockersock
+        path: /var/run/docker.sock
     environment:
       UID:
         from_secret: uid
@@ -21,11 +24,15 @@ steps:
         from_secret: postgres_password
       ZITADEL_DOMAIN:
         from_secret: zitadel_domain
-      ZITADEL_ADMIN_PASSWORD:
-        from_secret: zitadel_admin_password
     commands:
-      - printenv | grep -E "ZITADEL_|POSTGRES_" > .env
-      - docker-compose -f docker-compose.yml up -d
+      - printenv | grep -E "^(ZITADEL|POSTGRES|UID)_" > .env
+      - docker-compose -f docker-compose.yml down -v --remove-orphans
+      - docker system prune -f
+      - docker-compose -f docker-compose.yml up -d --remove-orphans
 trigger:
   branch:
     - main
+volumes:
+  - name: dockersock
+    host:
+      path: /var/run/docker.sock
