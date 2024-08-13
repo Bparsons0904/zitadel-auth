@@ -28,9 +28,6 @@ steps:
     commands:
       - docker-compose --env-file .env -f docker-compose.yml down db
       - docker-compose --env-file .env -f docker-compose.yml rm -f db
-      - docker system prune -f
-    depends_on:
-      - create-env-file
   - name: start-db
     image: docker/compose:1.29.2
     commands:
@@ -42,9 +39,6 @@ steps:
     commands:
       - docker-compose --env-file .env -f docker-compose.yml down zitadel-init
       - docker-compose --env-file .env -f docker-compose.yml rm -f zitadel-init
-      - docker system prune -f
-    depends_on:
-      - start-db
   - name: init-zitadel
     image: docker/compose:1.29.2
     commands:
@@ -56,9 +50,6 @@ steps:
     commands:
       - docker-compose --env-file .env -f docker-compose.yml down zitadel
       - docker-compose --env-file .env -f docker-compose.yml rm -f zitadel
-      - docker system prune -f
-    depends_on:
-      - init-zitadel
   - name: deploy-zitadel
     image: docker/compose:1.29.2
     commands:
