@@ -63,6 +63,7 @@ services:
         condition: "service_completed_successfully"
       db:
         condition: "service_healthy"
+    restart: "unless-stopped"
     healthcheck:
       test: ["CMD", "/app/zitadel", "ready"]
       interval: "10s"
@@ -70,7 +71,7 @@ services:
       retries: 5
       start_period: "10s"
   db:
-    restart: "always"
+    restart: "unless-stopped"
     image: postgres:16-alpine
     environment:
       - POSTGRES_USER=${POSTGRES_USER}
