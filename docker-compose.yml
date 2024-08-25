@@ -69,7 +69,7 @@ services:
         condition: "service_healthy"
     restart: "unless-stopped"
     healthcheck:
-      test: ["CMD", "/app/zitadel", "ready"]
+      test: ["CMD", "curl", "-f", "http://localhost:8088/debug/healthz"]
       interval: "10s"
       timeout: "5s"
       retries: 5
