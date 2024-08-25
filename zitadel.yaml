@@ -9,5 +9,5 @@ Log:
 TLS:
   Enabled: false
 ExternalDomain: "${ZITADEL_DOMAIN}"
-ExternalPort: 443
+ExternalPort: 8088
 ExternalSecure: true
