@@ -68,12 +68,12 @@ services:
       db:
         condition: "service_healthy"
     restart: "unless-stopped"
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8088/debug/healthz"]
-      interval: "10s"
-      timeout: "5s"
-      retries: 5
-      start_period: "10s"
+    # healthcheck:
+    #   test: ["CMD", "/app/zitadel", "ready"]
+    #   interval: "10s"
+    #   timeout: "5s"
+    #   retries: 5
+    #   start_period: "10s"
   db:
     restart: "unless-stopped"
     image: postgres:16-alpine
