@@ -1,0 +1,28 @@
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Generated files
+*.log
+*.pid
+
+# Zitadel runtime files
+admin.pat
+login-client.pat
+
+# Docker volumes and data
+zitadel_db_data/
+
+# Temporary files
+*.tmp
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Claude Code configuration
+CLAUDE.md
