@@ -73,6 +73,7 @@ services:
       - "traefik.http.routers.zitadel.entrypoints=https"
       - "traefik.http.routers.zitadel.rule=Host(`${ZITADEL_EXTERNALDOMAIN}`)"
       - "traefik.http.routers.zitadel.tls=true"
+      - "traefik.http.routers.zitadel.tls.certresolver=letsencrypt"
       - "traefik.http.routers.zitadel.service=zitadel"
       - "traefik.http.middlewares.zitadel-redirect-to-https.redirectscheme.scheme=https"
 
@@ -104,6 +105,8 @@ services:
       - "traefik.http.routers.zitadel-login.entrypoints=https"
       - "traefik.http.routers.zitadel-login.rule=Host(`${ZITADEL_EXTERNALDOMAIN}`) && (PathPrefix(`/ui/v2/login`) || PathPrefix(`/ui/v2/assets`))"
       - "traefik.http.routers.zitadel-login.tls=true"
+      - "traefik.http.routers.zitadel-login.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.zitadel-login.service=zitadel-login"
       - "traefik.http.services.zitadel-login.loadbalancer.server.port=3000"
       - "traefik.http.services.zitadel-login.loadbalancer.server.scheme=http"
 
