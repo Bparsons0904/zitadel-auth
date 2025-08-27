@@ -1,6 +1,6 @@
 services:
   zitadel:
-    image: ghcr.io/zitadel/zitadel:v2.71.0
+    image: ghcr.io/zitadel/zitadel:latest
     user: "${UID:-1000}"
     command: 'start-from-init --masterkey "${ZITADEL_MASTERKEY}" --tlsMode external'
     environment:
