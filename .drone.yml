@@ -23,7 +23,7 @@ steps:
       ZITADEL_ADMIN_PASSWORD:
         from_secret: zitadel_admin_password
     commands:
-      - docker-compose down --remove-orphans
+      - docker-compose down
       - docker-compose up -d
       - sleep 30
       - docker-compose ps
